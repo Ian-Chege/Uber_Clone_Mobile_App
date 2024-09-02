@@ -1,0 +1,7 @@
+.expo
+assets
+.gitignore
+.npmrc
+pnpm-lock.yaml
+node_modules
+README.md
