@@ -1,14 +1,17 @@
+import { useSignUp } from '@clerk/clerk-expo'
+import { Link, router } from 'expo-router'
+import { useState } from 'react'
+import { Alert, Image, ScrollView, Text, View } from 'react-native'
+
 import CustomButton from '@/components/customButton'
 import InputField from '@/components/inputField'
 import OAuth from '@/components/oAuth'
 import { icons, images } from '@/constants'
-import { useSignUp } from '@clerk/clerk-expo'
-import { Link } from 'expo-router'
-import { useState } from 'react'
-import { Alert, Image, ScrollView, Text, View } from 'react-native'
+import ReactNativeModal from 'react-native-modal'
 
-export default function SignInScreen() {
+export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp()
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -33,6 +36,43 @@ export default function SignInScreen() {
       Alert.alert('Error', err.errors[0].longMessage)
     }
   }
+
+  const onPressVerify = async () => {
+    if (!isLoaded) return
+    try {
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code: verification.code,
+      })
+      if (completeSignUp.status === 'complete') {
+        // await fetchAPI('/(api)/user', {
+        //   method: 'POST',
+        //   body: JSON.stringify({
+        //     name: form.name,
+        //     email: form.email,
+        //     clerkId: completeSignUp.createdUserId,
+        //   }),
+        // })
+        await setActive({ session: completeSignUp.createdSessionId })
+        setVerification({
+          ...verification,
+          state: 'success',
+        })
+      } else {
+        setVerification({
+          ...verification,
+          error: 'Verification failed. Please try again.',
+          state: 'failed',
+        })
+      }
+    } catch (err: any) {
+      setVerification({
+        ...verification,
+        error: err.errors[0].longMessage,
+        state: 'failed',
+      })
+    }
+  }
+
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
@@ -73,11 +113,9 @@ export default function SignInScreen() {
             Already have an account? <Text className="text-primary-500">Log In</Text>
           </Link>
         </View>
-        {/* <ReactNativeModal
+        <ReactNativeModal
           isVisible={verification.state === 'pending'}
-          // onBackdropPress={() =>
-          //   setVerification({ ...verification, state: "default" })
-          // }
+          onBackdropPress={() => setVerification({ ...verification, state: 'default' })}
           onModalHide={() => {
             if (verification.state === 'success') {
               setShowSuccessModal(true)
@@ -120,7 +158,7 @@ export default function SignInScreen() {
               className="mt-5"
             />
           </View>
-        </ReactNativeModal> */}
+        </ReactNativeModal>
       </View>
     </ScrollView>
   )

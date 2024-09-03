@@ -35,7 +35,7 @@ export default function OnboardingScreen() {
             <View className="flex flex-row items-center justify-center w-full mt-10">
               <Text className="text-black text-3xl font-bold mx-10 text-center">{item.title}</Text>
             </View>
-            <Text className="text-lg font-JakartaSemiBold text-center text-[#858585] mx-10 mt-3">
+            <Text className="font-JakartaSemiBold text-center text-[#858585] mx-10 mt-3 mb-3">
               {item.description}
             </Text>
           </View>
@@ -46,7 +46,7 @@ export default function OnboardingScreen() {
         onPress={() =>
           isLastSlide ? router.replace('/(auth)/sign-up') : swiperRef.current?.scrollBy(1)
         }
-        className="w-11/12 mt-4 mb-5"
+        className="w-11/12 mb-5"
       />
       <StatusBar style="auto" />
     </SafeAreaView>
