@@ -2,12 +2,13 @@ import { useSignUp } from '@clerk/clerk-expo'
 import { Link, router } from 'expo-router'
 import { useState } from 'react'
 import { Alert, Image, ScrollView, Text, View } from 'react-native'
+import ReactNativeModal from 'react-native-modal'
 
 import CustomButton from '@/components/customButton'
 import InputField from '@/components/inputField'
 import OAuth from '@/components/oAuth'
 import { icons, images } from '@/constants'
-import ReactNativeModal from 'react-native-modal'
+import { fetchAPI } from '@/lib/fetch'
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp()
@@ -44,14 +45,14 @@ export default function SignUpScreen() {
         code: verification.code,
       })
       if (completeSignUp.status === 'complete') {
-        // await fetchAPI('/(api)/user', {
-        //   method: 'POST',
-        //   body: JSON.stringify({
-        //     name: form.name,
-        //     email: form.email,
-        //     clerkId: completeSignUp.createdUserId,
-        //   }),
-        // })
+        await fetchAPI('/(api)/user', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            clerkId: completeSignUp.createdUserId,
+          }),
+        })
         await setActive({ session: completeSignUp.createdSessionId })
         setVerification({
           ...verification,
